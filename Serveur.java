@@ -48,29 +48,9 @@ public class Serveur {
 
         public void run() {
             try {
-                // Boucle pour gérer les commandes du protocole
-                String command;
-                while ((command = reader.readLine()) != null) {
-                    System.out.println("Commande reçue du client " + clientNumber + " : " + command);
-                    // Gérer la commande en fonction de son type
-                    if (command.equals("ITS_ME")) {
-                        writer.println("GIMME_PASSWORD");
-                    } else if (command.startsWith("PASSWD ")) {
-                        String password = command.substring(7);
-                        if (password.equals(Serveur.getServerPassword())) {
-                            writer.println("HELLO_YOU");
-                        } else {
-                            writer.println("YOU_DONT_FOOL_ME");
-                            socket.close();
-                            break;
-                        }
-                    } else if (command.equals("READY")) {
-                        writer.println("OK");
-                        // TODO : Ajouter ici la gestion des tâches à envoyer au client
-                    } else {
-                        writer.println("UNKNOWN_COMMAND");
-                    }
-                }
+                authenticateClient();
+                // Ajoutez ici la gestion des autres commandes du protocole...
+
             } catch (IOException e) {
                 System.err.println("Erreur de communication avec le client " + clientNumber + " : " + e.getMessage());
                 e.printStackTrace();
@@ -82,6 +62,52 @@ public class Serveur {
                     System.err.println("Erreur de fermeture du socket : " + e.getMessage());
                     e.printStackTrace();
                 }
+            }
+        }
+
+        private void authenticateClient() throws IOException {
+            // Envoi de la commande WHO_ARE_YOU_?
+            writer.println("WHO_ARE_YOU_?");
+
+            // Réception de la réponse du client
+            String response = reader.readLine();
+            if (response != null && response.equalsIgnoreCase("ITS_ME")) {
+                // Si la réponse est correcte, envoyer la commande GIMME_PASSWORD
+                writer.println("GIMME_PASSWORD");
+
+                // Attendre la réponse du client
+                response = reader.readLine();
+                if (response != null && response.startsWith("PASSWD ")) {
+                    String[] parts = response.split(" ");
+                    String password = parts[1]; // Récupérer le mot de passe envoyé par le client
+                    if (password.equals(Serveur.getServerPassword())) {
+                        // Si le mot de passe est correct, envoyer la commande HELLO_YOU
+                        writer.println("HELLO_YOU");
+
+                        // Attendre la commande READY du client
+                        response = reader.readLine();
+                        if (response != null && response.equalsIgnoreCase("READY")) {
+                            // Si le client est prêt, informer le client que sa participation est prise en compte
+                            writer.println("OK");
+                            // À ce stade, le client est considéré comme connecté et peut participer à des tâches
+                        } else {
+                            writer.println("MAUVAISE REPONSE, DECONNEXION");
+                            socket.close(); // Fermer la connexion
+                        }
+                    } else {
+                        // Si le mot de passe est incorrect, envoyer la commande YOU_DONT_FOOL_ME
+                        writer.println("YOU_DONT_FOOL_ME");
+                        socket.close(); // Fermer la connexion
+                    }
+                } else {
+                    // Si la réponse n'est pas conforme, fermer la connexion
+                    writer.println("MAUVAISE REPONSE, DECONNEXION");
+                    socket.close();
+                }
+            } else {
+                // Si la réponse n'est pas conforme, fermer la connexion
+                writer.println("MAUVAISE REPONSE, DECONNEXION");
+                socket.close();
             }
         }
     }
