@@ -1,5 +1,6 @@
 package fr.ul.miage;
 
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -65,13 +66,15 @@ public class Client {
                 }
 
                 // Attendre 1 seconde avant la prochaine instruction
-                Thread.sleep(1000);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.err.println("Erreur d'interruption : " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             System.err.println("Erreur de communication : " + e.getMessage());
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            System.err.println("Erreur d'interruption : " + e.getMessage());
             e.printStackTrace();
         }
     }
