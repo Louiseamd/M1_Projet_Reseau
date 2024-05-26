@@ -28,11 +28,13 @@ public class Serveur {
         return SERVER_PASSWORD;
     }
 
+ 
     static class ClientHandler extends Thread {
         private Socket socket;
         private int clientNumber;
         private BufferedReader reader;
         private PrintWriter writer;
+        private boolean isReady = false;
 
         public ClientHandler(Socket socket, int clientNumber) {
             this.socket = socket;
@@ -45,25 +47,20 @@ public class Serveur {
                 e.printStackTrace();
             }
         }
-
-        public void run() {
-            try {
-                authenticateClient();
-                // Ajoutez ici la gestion des autres commandes du protocole...
-
-            } catch (IOException e) {
-                System.err.println("Erreur de communication avec le client " + clientNumber + " : " + e.getMessage());
-                e.printStackTrace();
-            } finally {
-                try {
-                    socket.close();
-                    System.out.println("Connexion avec le client " + clientNumber + " fermée.");
-                } catch (IOException e) {
-                    System.err.println("Erreur de fermeture du socket : " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
+public boolean isReady() {
+            return isReady; // booleen qui se met  à vrai quand le client passe à "
         }
+
+        public void sendCommand(String command) {
+            writer.println(command);
+        }
+
+        public static int getClientIndex(ClientHandler client) {
+            return readyClients.indexOf(client);
+        }
+
+        
+    }
         
         private void authenticateClient() throws IOException {
             // Envoi de la commande WHO_ARE_YOU_?
