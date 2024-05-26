@@ -160,6 +160,16 @@ public class Serveur {
             }
 
         }
+
+        
+        // Méthode pour lancer une tâche et envoyer les commandes associées aux clients prêts
+        public static void startTask(int difficulty) {
+            String work = extractData(generateWork(difficulty));
+            int increment = readyClients.size() - 1;
+            // Envoyer la commande SOLVE aux clients
+            sendCommandToReadyClients(difficulty , work, increment); 
+        } 
+
         
         //Méthode pour valider ou non le nonce renvoyé par le Client
     public static String validateWork(int difficulty, long nonce, String hash) throws IOException {
