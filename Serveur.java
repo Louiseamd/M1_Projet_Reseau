@@ -65,6 +65,43 @@ public class Serveur {
             }
         }
 
+        // Méthode pour générer une tâche à partir de l'API
+        public static String generateWork(int difficulty) {
+            try {
+            String apiUrl = BASE_URL + "/generate_work?d=" + difficulty;
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + GROUP_ID);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            return response.toString();
+            } catch (Exception e) {
+            return "Failed to generate work: " + e.getMessage();
+            }
+        }
+        
+        // Méthode pour extraire les données utiles à partir de la réponse JSON de l'API
+        private static String extractData(String jsonResponse) {
+        int startIndex = jsonResponse.indexOf(""data":"");
+        if (startIndex != -1) {
+            int secondQuoteIndex = jsonResponse.indexOf('"', startIndex + 8);
+            if (secondQuoteIndex != -1) {
+                return jsonResponse.substring(startIndex + 8, secondQuoteIndex);
+            }
+        }
+        return "Failed to extract data from JSON response.";
+        }
+        
         private void authenticateClient() throws IOException {
             // Envoi de la commande WHO_ARE_YOU_?
             writer.println("WHO_ARE_YOU_?");
