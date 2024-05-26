@@ -59,6 +59,43 @@ public boolean isReady() {
             return readyClients.indexOf(client);
         }
 
+        public void run() {
+            try {
+                authenticateClient();
+                while (isReady) {
+                    String command = reader.readLine();
+                    if (command == null) {
+                        break;
+                    }
+                    System.out.println("Commande reçue pour le client " + clientNumber + " : " + command);
+
+                 // Gérer la commande FOUND envoyée par le client
+                    if (command.startsWith("FOUND")) { 
+                        String[] parts = command.split(" ");
+                        String hash = parts[1];
+                        long nonce = Long.parseLong(parts[2], 16);
+                        int difficulty = Integer.valueOf(parts[3]);
+                        String response = validateWork(difficulty, nonce, hash);
+                        writer.println(response);
+                        if(response.startsWith("HTTP/1.1 200 OK")) {
+                            writer.println("OK");
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Erreur de communication avec le client " + clientNumber + " : " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                    System.out.println("Connexion avec le client " + clientNumber + " fermée.");
+                    readyClients.remove(this);
+                } catch (IOException e) {
+                    System.err.println("Erreur de fermeture du socket : " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
         
     }
         
