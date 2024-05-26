@@ -110,5 +110,34 @@ public class Serveur {
                 socket.close();
             }
         }
+        //Méthode pour valider ou non le nonce renvoyé par le Client
+    public static String validateWork(int difficulty, long nonce, String hash) throws IOException {
+        URL url = new URL(API_URL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Authorization", "Bearer " + GROUP_ID);
+        connection.setDoOutput(true);
+
+        String jsonInputString = String.format("{"d": %d, "n": "%s", "h": "%s"}", difficulty, Long.toHexString(nonce), hash);
+
+        try (OutputStream os = connection.getOutputStream()) {
+          byte[] input = jsonInputString.getBytes("utf-8");
+          os.write(input, 0, input.length);
+        }
+
+        int responseCode = connection.getResponseCode();
+        String responseMessage = connection.getResponseMessage();
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(
+          (responseCode >= 200 && responseCode < 300) ? connection.getInputStream() : connection.getErrorStream()))) {
+          StringBuilder response = new StringBuilder();
+          String inputLine;
+          while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+          }
+          return responseCode + " " + responseMessage + ": " + response.toString();
+        }
+      }
     }
 }
