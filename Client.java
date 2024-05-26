@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Client {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 12351;
+    private static final int SERVER_PORT = 1337;
     private static int difficulty;
     private static long nonceStart;
     private static long nonceIncrement;
