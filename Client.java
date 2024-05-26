@@ -77,12 +77,42 @@ public class Client {
             System.err.println("Erreur de communication : " + e.getMessage());
             e.printStackTrace();
         }
-        public static String generateTarget(int difficulty) {
+        
+        }
+    
+    public static String generateTarget(int difficulty) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < difficulty; i++) {
           sb.append("0");
         }
         return sb.toString();
       }
-    }
+
+
+        private static byte[] longToTrimmedBytes(long x) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        boolean nonZeroFound = false;
+
+        for (int i = 0; i < Long.BYTES; i++) {
+          byte b = (byte)(x >> (8 * (Long.BYTES - 1 - i)));
+          if (b != 0 || nonZeroFound) {
+            baos.write(b);
+            nonZeroFound = true;
+          }
+            }
+
+            return baos.toByteArray();
+            }
+
+      private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b: bytes) {
+          sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+      }
+    
+    
+}
+    
     
