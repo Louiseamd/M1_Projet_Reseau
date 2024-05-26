@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 public class Serveur {
     // Déclaration des constantes et des variables statiques
-    private static final int PORT = 12351; // Numéro de port p
+    private static final int PORT = 1337; // Numéro de port p
     private static final String API_URL = "https://projet-raizo-idmc.netlify.app/.netlify/functions/validate_work";
     private static final String SERVER_PASSWORD = "azerty"; // Mot de passe pour l'authentification des clients
     private static final String BASE_URL = "https://projet-raizo-idmc.netlify.app/.netlify/functions"; // URL de base pour les appels API
