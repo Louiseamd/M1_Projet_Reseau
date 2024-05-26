@@ -147,6 +147,20 @@ public class Serveur {
                 socket.close();
             }
         }
+
+        public static void sendCommandToReadyClients(int difficulty, String work, int increment) {
+        // Envoyer une commande à tous les clients prêts à effectuer des tâches
+
+        for (ClientHandler client : readyClients) {
+            int clientIndex = readyClients.indexOf(client);
+            int start = clientIndex;
+            client.sendCommand("NONCE " + start + " " + String.valueOf(increment));
+            client.sendCommand("SOLVE " + difficulty);
+            client.sendCommand("PAYLOAD " + work);
+            }
+
+        }
+        
         //Méthode pour valider ou non le nonce renvoyé par le Client
     public static String validateWork(int difficulty, long nonce, String hash) throws IOException {
         URL url = new URL(API_URL);
