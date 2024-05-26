@@ -77,5 +77,12 @@ public class Client {
             System.err.println("Erreur de communication : " + e.getMessage());
             e.printStackTrace();
         }
+        public static String generateTarget(int difficulty) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < difficulty; i++) {
+          sb.append("0");
+        }
+        return sb.toString();
+      }
     }
-}
+    
